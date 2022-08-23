@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class KafkaScheduler {
     private static Logger log = LoggerFactory.getLogger(KafkaScheduler.class);
@@ -51,8 +52,8 @@ public class KafkaScheduler {
             return new SchedulerConfig(name, srcTopic, destTopic, extractorClass, enable, ep);
         } else {
             log.warn("Please Check your config. " +
-                    "Prefix: " + prefix + ", config key: 'topic.src', 'topic.dest', 'timestamp.format', " +
-                    "'timestamp.header-name' are required. 'enable' is optional (default true)");
+                    "Prefix: " + prefix + ", config key: 'topic.src', 'topic.dest', " +
+                    " are required. 'enable' is optional (default true)");
             return null;
         }
     }
@@ -83,7 +84,16 @@ public class KafkaScheduler {
         }
     }
     public static void main(String[] args) throws IOException {
-        Properties p = EnvAwareProperties.fromPath("./example/client.properties", "./example/scheduler.properties");
+        if(args.length < 1) {
+            System.err.println("Please specify all properties in the argument. You may specify log4j config file like " +
+                    "-Dlog4j.configuration=file:./example/log4j.properties");
+            System.exit(1);
+        }
+        if(System.getProperty("log4j.configuration") == null) {
+            System.err.println("Please specify log4j config file via -Dlog4j.configuration=file:xx/xx/log4j.properties or all logs are lost!");
+            System.exit(1);
+        }
+        Properties p = EnvAwareProperties.fromPath(args);
         Topology builder = new Topology();
         // add the source processor node that takes Kafka topic "source-topic" as input
         List<SchedulerConfig> configs = loadConfig(p);
@@ -108,6 +118,7 @@ public class KafkaScheduler {
 
         if(counter == 0) {
             log.error("No scheduler configured to run!");
+            log.error("Please define scheduler.list=name1,name2,name3... in any of the properties");
             System.exit(1);
         }
         KafkaStreams streams = new KafkaStreams(builder, p);

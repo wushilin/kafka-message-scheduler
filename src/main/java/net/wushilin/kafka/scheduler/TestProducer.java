@@ -17,7 +17,7 @@ public class TestProducer {
     static Random rand = new Random();
     static int sleep = 0;
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        Properties p = EnvAwareProperties.fromPath("./example/client.properties", "./example/producer.properties");
+        Properties p = EnvAwareProperties.fromPath("./example/stream.properties", "./example/others/producer.properties");
         KafkaProducer<String, String> producer = new KafkaProducer<>(p);
         for(int i = 0; i < 200000;i++) {
             long now = System.currentTimeMillis();
@@ -25,12 +25,19 @@ public class TestProducer {
             for(int j = 0; j < 10; j++) {
                 ProducerRecord<String, String> record = new ProducerRecord<>("src-topic-" + j, "key-" + new Date(due) +"@" + i,
                         "value-" + new Date(due) + "@" + i);
-                record.headers().add("after-ts" + j, sdf.format(new Date(due)).getBytes(StandardCharsets.UTF_8));
+                if(j == 9) {
+                    record.headers().add("after-ts-long" +j, ("" + System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
+                } else if(j == 8) {
+                    record.headers().add("after-ts-short" + j, ("" + System.currentTimeMillis()/1000).getBytes(StandardCharsets.UTF_8));
+                } else {
+                    record.headers().add("after-ts" + j, sdf.format(new Date(due)).getBytes(StandardCharsets.UTF_8));
+                }
                 for(int k = 0; k < rand.nextInt(5); k++) {
                     String key = RandomUtil.random(5);
                     byte[] value = RandomUtil.random(3).getBytes(StandardCharsets.UTF_8);
                     record.headers().add(key, value);
                 }
+
                 producer.send(record);
             }
             //Thread.sleep(1);

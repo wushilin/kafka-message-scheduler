@@ -32,12 +32,30 @@ public class HeaderTimestampExtractor implements PublishTimestampExtractor{
             return 0;
         }
 
+
         String value = new String(valueBytes, StandardCharsets.UTF_8);
+        if("longms".equalsIgnoreCase(this.timestampFormat)) {
+            try {
+                return Long.parseLong(value);
+            } catch(Exception ex) {
+                log.warn("Failed to parse date for {} with format {}", value, this.timestampFormat);
+                return 0;
+            }
+        }
+        if("long".equalsIgnoreCase(this.timestampFormat)) {
+            try {
+                return Long.parseLong(value) * 1000;
+            } catch(Exception ex) {
+                log.warn("Failed to parse date for {} with format {}", value, this.timestampFormat);
+                return 0;
+            }
+        }
+
         try {
             SimpleDateFormat sdf = getFormat();
             return sdf.parse(value).getTime();
         } catch(Exception ex) {
-            log.warn("Failed to parse date for {} with value {}", value, this.timestampFormat);
+            log.warn("Failed to parse date for {} with format {}", value, this.timestampFormat);
             return 0;
         }
     }

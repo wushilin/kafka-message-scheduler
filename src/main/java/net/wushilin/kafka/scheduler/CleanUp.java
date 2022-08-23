@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 public class CleanUp {
     private static Logger log = LoggerFactory.getLogger(CleanUp.class);
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        Properties p = EnvAwareProperties.fromPath("./example/client.properties", "./example/producer.properties");
+        Properties p = EnvAwareProperties.fromPath("./example/stream.properties");
         AdminClient adm = AdminClient.create(p);
 
         int counter = 10;
