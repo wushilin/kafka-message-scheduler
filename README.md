@@ -214,3 +214,12 @@ Start the service
 ```
 
 Check your log based on your log4j.properties for any error.
+
+# Fixing issues
+Occasionally, you may accidentally publish a lot of messages that are supposed to publish in very far future (e.g. 2095-01-01 by mistake).
+
+These messages can be deleted from the scheduled topic by using delete.water.mark.
+
+You may start your program with additional argument -Ddelete.water.mark=4800000000000 (equals to Sun Feb 08 21:20:00 SGT 2122).
+
+This will delete all records that has the scheduled publish time <= than this date.
