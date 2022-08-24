@@ -62,6 +62,10 @@ Headers are preserved. The order of header may be affected, however that typical
 
 The copy process does not touch the data at all.
 
+## Encrypted payload
+Encrypted payload is well supported. This is because the headers are copied, and the encrypted payload is untouched.
+
+
 ## Schema enabled data types
 Avros, JSON, Protobuffs, are supported. This is because the encoded data has the schema id encoded, which will
 be copied as is. 
