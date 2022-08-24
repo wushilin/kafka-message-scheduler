@@ -19,8 +19,9 @@ public class TestProducer {
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         Properties p = EnvAwareProperties.fromPath("./example/stream.properties", "./example/others/producer.properties");
         KafkaProducer<String, String> producer = new KafkaProducer<>(p);
+        long ts = 1661389788176L;
         for(int i = 0; i < 200000;i++) {
-            long now = System.currentTimeMillis();
+            long now = ts;
             long due = now + rand.nextInt(1000) + 30000;
             for(int j = 0; j < 10; j++) {
                 ProducerRecord<String, String> record = new ProducerRecord<>("src-topic-" + j, "key-" + new Date(due) +"@" + i,
