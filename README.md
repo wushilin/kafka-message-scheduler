@@ -35,7 +35,9 @@ recognize the `publish-at` header so message can be published immediately past t
 
 # Features
 ## Exactly once capable. (You have to configure EOS)
-This is based on your configuration in stream.properties below
+This is based on your configuration in stream.properties below.
+
+If you configured your EOS, then you must configure the consumer of copied topic to use `read_comitted` isolation level.
 
 ## High throughput: Throughput up to 500K messages per thread per 5 seconds
 If this is not enough, please add more threads and partitions.
@@ -50,6 +52,23 @@ Messages will be published in the following order:
 
 ## Multi scheduling
 You can add many scheduler to publish multiple topics to multiple topics.
+
+## Data preservance
+Keys are copied byte for byte.
+
+Values are copied byte for byte.
+
+Headers are preserved. The order of header may be affected, however that typically will not cause any issue.
+
+The copy process does not touch the data at all.
+
+## Schema enabled data types
+Avros, JSON, Protobuffs, are supported. This is because the encoded data has the schema id encoded, which will
+be copied as is. 
+
+However, if you view the schema in your control center, or any other tool you will not see the subject defined
+for the new topic. This is normal. Your Schema enabled consumer should be able to consume the data as if you
+were consuming from the original topic.
 
 # Building the software
 ```bash
